@@ -1,0 +1,6 @@
+Study_ID,Author,Year,Sample_Size,Mean_Treatment,SD_Treatment,Mean_Control,SD_Control,Outcome_Measure
+1,Smith et al.,2018,100,5.2,1.1,4.3,1.0,Blood Pressure (mmHg)
+2,Johnson et al.,2020,120,6.0,0.9,5.5,1.2,Blood Pressure (mmHg)
+3,Lee et al.,2019,80,4.8,1.3,4.6,1.1,Blood Pressure (mmHg)
+4,Patel et al.,2021,150,5.5,1.0,4.9,0.8,Blood Pressure (mmHg)
+5,Wang et al.,2017,95,5.1,1.2,4.2,1.0,Blood Pressure (mmHg)

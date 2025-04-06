@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String         @id @default(uuid())
+  firstName            String
+  lastName             String
+  email                String         @unique
+  password             String
+  role                 Role           @default(USER)
+  plan                 Plan           @default(BASIC)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  emailVerified        Boolean        @default(false)
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  projects             Project[]
+  datasets             Dataset[]
+  analyses             Analysis[]
+  subscription         Subscription?
+  billings             Billing[]
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isArchived  Boolean   @default(false)
+  user        User      @relation(fields: [userId], references: [id])
+  datasets    Dataset[]
+}
+
+model Dataset {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  projectId   String
+  userId      String
+  fileUrl     String
+  fileType    String
+  fileSize    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isArchived  Boolean   @default(false)
+  project     Project   @relation(fields: [projectId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  analyses    Analysis[]
+}
+
+model Analysis {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  datasetId   String
+  userId      String
+  type        AnalysisType
+  parameters  Json
+  results     Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isArchived  Boolean   @default(false)
+  dataset     Dataset   @relation(fields: [datasetId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  plan               Plan
+  status             SubStatus
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id])
+}
+
+model Billing {
+  id           String      @id @default(uuid())
+  userId       String
+  amount       Float
+  currency     String      @default("USD")
+  status       BillingStatus
+  paymentMethod String
+  invoiceUrl   String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  user         User        @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum AnalysisType {
+  DESCRIPTIVE
+  INFERENTIAL
+  SURVIVAL
+  CUSTOM
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+}
+
+enum BillingStatus {
+  SUCCEEDED
+  PENDING
+  FAILED
+  REFUNDED
+} 
